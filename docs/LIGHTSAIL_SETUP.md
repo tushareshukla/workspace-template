@@ -28,7 +28,6 @@ Complete guide to deploy workspace-template on AWS Lightsail.
 3. **Optional**: Attach a static IP
    - Click **Create static IP**
    - Attach to your instance
-
 ## Step 3: Connect to VM
 
 ### Option A: Browser SSH
