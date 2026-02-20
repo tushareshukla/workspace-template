@@ -1,0 +1,52 @@
+# Build stage
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@8.14.0 --activate
+
+# Copy package files
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml* ./
+COPY packages/types/package.json ./packages/types/
+COPY apps/dashboard/package.json ./apps/dashboard/
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
+# Copy source files
+COPY packages/types ./packages/types
+COPY apps/dashboard ./apps/dashboard
+COPY tsconfig.json ./
+
+# Set build-time environment variables
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_WS_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NEXT_PUBLIC_WS_URL=${NEXT_PUBLIC_WS_URL}
+
+# Build
+RUN pnpm --filter @workspace/dashboard build
+
+# Production stage
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+# Copy built files
+COPY --from=builder /app/apps/dashboard/.next/standalone ./
+COPY --from=builder /app/apps/dashboard/.next/static ./apps/dashboard/.next/static
+COPY --from=builder /app/apps/dashboard/public ./apps/dashboard/public
+
+USER nextjs
+
+ENV NODE_ENV=production
+ENV PORT=3001
+
+EXPOSE 3001
+
+CMD ["node", "apps/dashboard/server.js"]
