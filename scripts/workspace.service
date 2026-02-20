@@ -1,0 +1,19 @@
+# Systemd service file for Workspace
+# Copy to: /etc/systemd/system/workspace.service
+# Then run: sudo systemctl enable workspace && sudo systemctl start workspace
+
+[Unit]
+Description=Workspace Dashboard & API
+After=network.target
+
+[Service]
+Type=forking
+User=ubuntu
+WorkingDirectory=/opt/workspace
+ExecStart=/opt/workspace/scripts/vm-deploy.sh
+ExecStop=/usr/bin/pkill -f "tsx.*api" && /usr/bin/pkill -f "next.*dashboard"
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
