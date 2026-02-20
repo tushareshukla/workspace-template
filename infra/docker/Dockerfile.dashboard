@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install pnpm and build tools for native modules
 RUN corepack enable && corepack prepare pnpm@8.14.0 --activate
-RUN apk add --no-cache python3 make g++ && ln -sf /usr/bin/python3 /usr/bin/python
+RUN apk add --no-cache python3 py3-setuptools make g++ && ln -sf /usr/bin/python3 /usr/bin/python
 
 # Copy all files
 COPY . .
