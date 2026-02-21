@@ -19,6 +19,10 @@ services:
       - api-data:/data
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    environment:
+      - OPENCLAW_GATEWAY_URL=http://host.docker.internal:18789
+      - OPENCLAW_WS_URL=ws://host.docker.internal:18789
+      - DATABASE_PATH=/data/workspace.db
 
 volumes:
   api-data:
