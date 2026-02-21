@@ -2,15 +2,22 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-# Install pnpm and build tools for native modules
-RUN corepack enable && corepack prepare pnpm@8.14.0 --activate
+# Install build tools for native modules
 RUN apk add --no-cache python3 py3-setuptools make g++ && ln -sf /usr/bin/python3 /usr/bin/python
 
-# Copy all files
+# Copy package files first for better caching
+COPY package.json ./
+COPY apps/api/package.json ./apps/api/
+COPY packages/types/package.json ./packages/types/
+COPY packages/utils/package.json ./packages/utils/
+COPY packages/database/package.json ./packages/database/
+COPY packages/openclaw-client/package.json ./packages/openclaw-client/
+
+# Copy source files
 COPY . .
 
-# Install dependencies
-RUN pnpm install
+# Use npm instead of pnpm for reliable module resolution
+RUN npm install --legacy-peer-deps
 
 # Create data directory
 RUN mkdir -p /app/data
@@ -21,5 +28,6 @@ ENV WS_PORT=4001
 
 EXPOSE 4000 4001
 
-# Run with tsx (handles TypeScript directly)
-CMD ["pnpm", "--filter", "@workspace/api", "dev"]
+# Run API with tsx
+WORKDIR /app/apps/api
+CMD ["npm", "run", "dev"]

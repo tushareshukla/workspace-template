@@ -12,8 +12,8 @@
     "start": "turbo run start",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "db:migrate": "pnpm --filter @workspace/database migrate",
-    "db:seed": "pnpm --filter @workspace/database seed",
+    "db:migrate": "npm run migrate -w @workspace/database",
+    "db:seed": "npm run seed -w @workspace/database",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "docker:build": "docker-compose build",
@@ -26,7 +26,6 @@
     "turbo": "^2.0.0",
     "typescript": "^5.3.3"
   },
-  "packageManager": "pnpm@8.14.0",
   "engines": {
     "node": ">=20.0.0"
   }

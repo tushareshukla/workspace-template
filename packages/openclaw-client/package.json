@@ -11,7 +11,7 @@
   "dependencies": {
     "ws": "^8.16.0",
     "zod": "^3.22.4",
-    "@workspace/types": "workspace:*"
+    "@workspace/types": "*"
   },
   "devDependencies": {
     "@types/ws": "^8.5.10",
