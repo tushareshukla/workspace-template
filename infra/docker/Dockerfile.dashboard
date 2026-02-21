@@ -2,24 +2,14 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-# Copy dashboard package.json and install dependencies directly
+# Copy dashboard package.json
 COPY apps/dashboard/package.json ./package.json
 
-# Create a standalone package.json without workspace dependencies
-RUN node -e "
-const pkg = require('./package.json');
-// Remove workspace dependencies
-delete pkg.dependencies['@workspace/types'];
-delete pkg.dependencies['@workspace/utils'];
-require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2));
-"
-
-# Install dependencies
-RUN npm install
+# Remove workspace dependencies and install
+RUN node -e "const pkg = require('./package.json'); delete pkg.dependencies['@workspace/types']; delete pkg.dependencies['@workspace/utils']; require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2));" && npm install
 
 # Copy dashboard source files
 COPY apps/dashboard/src ./src
-COPY apps/dashboard/public ./public 2>/dev/null || true
 COPY apps/dashboard/next.config.js ./
 COPY apps/dashboard/tsconfig.json ./
 COPY apps/dashboard/postcss.config.js ./
@@ -29,9 +19,11 @@ RUN mkdir -p node_modules/@workspace/types && \
     echo '{"name":"@workspace/types","version":"1.0.0","main":"index.js"}' > node_modules/@workspace/types/package.json && \
     echo 'module.exports = {};' > node_modules/@workspace/types/index.js
 
-RUN mkdir -p node_modules/@workspace/utils && \
-    echo '{"name":"@workspace/utils","version":"1.0.0","main":"index.js","exports":{"./*":"./index.js"}}' > node_modules/@workspace/utils/package.json && \
-    echo 'exports.formatRelativeTime = () => ""; exports.formatRelativeTimeShort = () => ""; exports.formatDate = () => ""; exports.formatTime = () => ""; exports.formatDateTime = () => ""; exports.formatDuration = () => ""; exports.isToday = () => false; exports.isYesterday = () => false; exports.toDateTime = () => new Date(); exports.formatNumber = (n) => String(n); exports.formatCompact = (n) => String(n); exports.formatTokens = (n) => String(n); exports.formatBytes = (n) => String(n); exports.formatPercent = (n) => String(n); exports.truncate = (s) => s; exports.capitalize = (s) => s; exports.toTitleCase = (s) => s; exports.pluralize = (s) => s; exports.formatCount = (n) => String(n); exports.generateId = () => "id"; exports.generateShortId = () => "id"; exports.ids = { task: () => "task_id", agent: () => "agent_id", session: () => "session_id", message: () => "msg_id", event: () => "evt_id" };' > node_modules/@workspace/utils/index.js
+RUN mkdir -p node_modules/@workspace/utils/date node_modules/@workspace/utils/format node_modules/@workspace/utils/id && \
+    echo '{"name":"@workspace/utils","version":"1.0.0"}' > node_modules/@workspace/utils/package.json && \
+    echo 'module.exports = { formatRelativeTime: () => "", formatDate: () => "", formatTime: () => "", formatDateTime: () => "", formatDuration: () => "", isToday: () => false, isYesterday: () => false, toDateTime: () => new Date(), formatRelativeTimeShort: () => "" };' > node_modules/@workspace/utils/date.js && \
+    echo 'module.exports = { formatNumber: (n) => String(n), formatCompact: (n) => String(n), formatTokens: (n) => String(n), formatBytes: (n) => String(n), formatPercent: (n) => String(n), truncate: (s) => s, capitalize: (s) => s, toTitleCase: (s) => s, pluralize: (s) => s, formatCount: (n) => String(n) };' > node_modules/@workspace/utils/format.js && \
+    echo 'module.exports = { generateId: () => "id", generateShortId: () => "id", ids: { task: () => "task_id", agent: () => "agent_id", session: () => "session_id", message: () => "msg_id", event: () => "evt_id" } };' > node_modules/@workspace/utils/id.js
 
 ENV NODE_ENV=development
 ENV PORT=3001
