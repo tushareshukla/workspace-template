@@ -1,19 +1,18 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './src/**/*.{js,ts,jsx,tsx,mdx}',
+    './apps/dashboard/src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
       colors: {
-        // Custom color palette matching your screenshot
         primary: {
           50: '#fef7ee',
           100: '#fdedd3',
           200: '#fad7a5',
           300: '#f6b96d',
           400: '#f19132',
-          500: '#ee7712',  // Main accent (orange)
+          500: '#ee7712',
           600: '#df5c08',
           700: '#b94409',
           800: '#93360f',

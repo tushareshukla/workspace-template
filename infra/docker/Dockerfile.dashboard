@@ -18,5 +18,4 @@ ENV PORT=3001
 EXPOSE 3001
 
 # Run Next.js dev server
-WORKDIR /app/apps/dashboard
-CMD ["pnpm", "dev"]
+CMD ["pnpm", "--filter", "@workspace/dashboard", "dev"]
