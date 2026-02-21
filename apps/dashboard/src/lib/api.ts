@@ -1,4 +1,15 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+// Auto-detect API URL based on current host
+const getApiUrl = () => {
+  if (typeof window !== 'undefined') {
+    // In browser - use same host but port 4000
+    const host = window.location.hostname;
+    return `http://${host}:4000`;
+  }
+  // Server-side - use environment variable or default
+  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+};
+
+const API_URL = getApiUrl();
 
 export async function apiClient<T>(
   endpoint: string,
