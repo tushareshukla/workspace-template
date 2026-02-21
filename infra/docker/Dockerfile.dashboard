@@ -17,5 +17,6 @@ ENV PORT=3001
 
 EXPOSE 3001
 
-# Run Next.js dev server
-CMD ["pnpm", "--filter", "@workspace/dashboard", "dev"]
+# Run Next.js dev server from dashboard directory (required for postcss/tailwind config resolution)
+WORKDIR /app/apps/dashboard
+CMD ["pnpm", "dev"]
