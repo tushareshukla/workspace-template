@@ -3,7 +3,6 @@
  * Uses shared @workspace/utils for date/number formatting
  */
 import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
 
 // Re-export from shared utils
 export {
@@ -38,10 +37,10 @@ export {
 } from '@workspace/utils/id';
 
 /**
- * Merge Tailwind CSS classes with clsx
+ * Merge CSS classes with clsx
  */
 export function cn(...inputs: ClassValue[]): string {
-  return twMerge(clsx(inputs));
+  return clsx(inputs);
 }
 
 /**
